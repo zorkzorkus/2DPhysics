@@ -139,7 +139,7 @@ void Application::OnMouseEvent(UINT32 key, INT32 x, INT32 y, bool down) {
 
 				newObject = new Box(Vector2f(160.f, 20.f), 999.f, Vector2f(x, 1440.f - y));
 				newObject->AngularVelocity() = 5.f;
-				newObject->Acceleration() = Vector2f(0.f, 0.f);
+				newObject->Acceleration() = Vector2f(0.f, cGravity);
 				m_Objects.push_back(newObject);
 
 				break;

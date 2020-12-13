@@ -32,6 +32,10 @@ float & Object::AngularVelocity() {
 	return m_AngularVelocity;
 }
 
+float& Object::MomentOfInertia() {
+	return m_MomentOfInertia;
+}
+
 float Object::GetMass() {
 	return m_Mass;
 }

@@ -154,12 +154,26 @@ void Physics::ApplyImpulseRotation() {
 		Vector2f velocityParallel2 = velocityPoint2.dot(c.m_CollisionNormal) * c.m_CollisionNormal;
 
 		Vector2f closingVelocity = velocityParallel2 - velocityParallel1;
+		float cr = 0.3f; // TODO: cr usually is a property of the colliding materials
+		Vector2f seperatingVelocity = closingVelocity * cr;
 
-		// TODO: coefficient of resitution = 30%
-		float coeff = 1.f + 0.3f;
+		float numerator = seperatingVelocity.dot(c.m_CollisionNormal);
+		float denumerator = c.m_CollisionNormal.squaredNorm() * sumInvMass;
+		float denum1 = pow(c.m_CollisionNormal.dot(leverArm1), 2) / obj1->MomentOfInertia();
+		float denum2 = pow(c.m_CollisionNormal.dot(leverArm2), 2) / obj2->MomentOfInertia();
+		float factorJ = numerator / (denumerator + denum1 + denum2);
 
-		obj1->Velocity() += massFactor1 * closingVelocity * coeff;
-		obj2->Velocity() -= massFactor2 * closingVelocity * coeff;
+		float newAngular1 = obj1->AngularVelocity() + rad2deg(factorJ * c.m_CollisionNormal.dot(leverArm1) / obj1->MomentOfInertia());
+		float newAngular2 = obj2->AngularVelocity() - rad2deg(factorJ * c.m_CollisionNormal.dot(leverArm2) / obj2->MomentOfInertia());
+
+		Vector2f newTrans1 = obj1->Velocity() + factorJ * obj1->GetInvertedMass() * c.m_CollisionNormal;
+		Vector2f newTrans2 = obj2->Velocity() - factorJ * obj2->GetInvertedMass() * c.m_CollisionNormal;
+
+		obj1->Velocity() = newTrans1;
+		obj2->Velocity() = newTrans2;
+		obj1->AngularVelocity() = newAngular1;
+		obj2->AngularVelocity() = newAngular2;
+
 
 	}
 }

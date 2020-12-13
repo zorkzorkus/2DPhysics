@@ -16,6 +16,7 @@ public:
 	Vector2f& Acceleration();
 	float& Angle();
 	float& AngularVelocity();
+	float& MomentOfInertia();
 
 	// Mass can not be accessed by reference since we cache it's inverted value.
 	float GetMass();
@@ -35,6 +36,7 @@ protected:
 	Vector2f m_Position;
 	Vector2f m_Velocity;
 	Vector2f m_Acceleration;
+	float m_MomentOfInertia;
 	float m_Mass;
 	float m_InvertedMass;
 	float m_Angle;
