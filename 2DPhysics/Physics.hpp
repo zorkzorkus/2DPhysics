@@ -17,6 +17,8 @@ private:
 	bool CheckCollisions();
 	void ResolveCollision();
 	void ApplyImpulse();
+	void ApplyImpulseSimple();
+	void ApplyImpulseRotation();
 
 	bool TestCollision(Object* o1, Object* o2);
 	bool TestCollisionCircleCircle(Circle* c1, Circle* c2);

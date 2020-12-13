@@ -17,8 +17,8 @@ void Application::Run() {
 
 	while (m_KeepRunning) {
 		m_pWindow->HandleMessages();
-		Update();
 		m_pWindow->Render();
+		Update();
 	}
 
 }
@@ -81,7 +81,7 @@ void Application::OnKeyEvent(UINT32 key, bool down) {
 				m_Objects.push_back(newObject);
 				break;
 			case 0x31:
-				newObject = new Box(Vector2f(100, 20), cInfiniteMass, Vector2f(x, y));
+				newObject = new Box(Vector2f(300, 30), cInfiniteMass, Vector2f(x, y));
 				newObject->Angle() = 180;
 				m_Objects.push_back(newObject);
 				break;
@@ -92,6 +92,16 @@ void Application::OnKeyEvent(UINT32 key, bool down) {
 			case 0x33:
 				newObject = new Box(Vector2f(160.f, 20.f), 999.f, Vector2f(x, y));
 				newObject->AngularVelocity() = -5.f;
+				newObject->Acceleration() = Vector2f(0.f, 0.f);
+				m_Objects.push_back(newObject);
+				break;
+			case 0x34:
+				newObject = new Box(Vector2f(100, 100), 999.f, Vector2f(1280, 720));
+				newObject->Acceleration() = Vector2f(0.f, 0.f);
+				m_Objects.push_back(newObject);
+				// box1 goes to H = 820, we want tiny intersection: sqrt(2)*50 - 5
+				newObject = new Box(Vector2f(50, 50), 999.f, Vector2f(1280, 720 + 100 + sqrt(2) * 50.f - 5));
+				newObject->Angle() = 45.f;
 				newObject->Acceleration() = Vector2f(0.f, 0.f);
 				m_Objects.push_back(newObject);
 				break;
