@@ -3,7 +3,7 @@
 Physics::Physics(std::vector<Object*>& objects) : m_Objects(objects) {
 }
 
-void Physics::Update(float timeDelta) {
+void Physics::Update(Float timeDelta) {
 
 	for (auto& o : m_Objects) {
 		o->Update(timeDelta);
@@ -52,9 +52,9 @@ void Physics::ResolveCollision() {
 		Object* obj1 = c.m_Object1;
 		Object* obj2 = c.m_Object2;
 
-		float sumInvMass = obj1->GetInvertedMass() + obj2->GetInvertedMass();
-		float massFactor1 = obj1->GetInvertedMass() / sumInvMass;
-		float massFactor2 = obj2->GetInvertedMass() / sumInvMass;
+		Float sumInvMass = obj1->GetInvertedMass() + obj2->GetInvertedMass();
+		Float massFactor1 = obj1->GetInvertedMass() / sumInvMass;
+		Float massFactor2 = obj2->GetInvertedMass() / sumInvMass;
 
 		// Resolve Interpenetration
 
@@ -81,18 +81,18 @@ void Physics::ApplyImpulseSimple() {
 		Object* obj1 = c.m_Object1;
 		Object* obj2 = c.m_Object2;
 
-		float sumInvMass = obj1->GetInvertedMass() + obj2->GetInvertedMass();
-		float massFactor1 = obj1->GetInvertedMass() / sumInvMass;
-		float massFactor2 = obj2->GetInvertedMass() / sumInvMass;
+		Float sumInvMass = obj1->GetInvertedMass() + obj2->GetInvertedMass();
+		Float massFactor1 = obj1->GetInvertedMass() / sumInvMass;
+		Float massFactor2 = obj2->GetInvertedMass() / sumInvMass;
 
 		// Apply Impulse (without rotation / friction)
 
-		Vector2f velocityParallel1 = obj1->Velocity().dot(c.m_CollisionNormal) * c.m_CollisionNormal;
-		Vector2f velocityParallel2 = obj2->Velocity().dot(c.m_CollisionNormal) * c.m_CollisionNormal;
-		Vector2f closingVelocity = velocityParallel2 - velocityParallel1;
+		Vector2 velocityParallel1 = obj1->Velocity().dot(c.m_CollisionNormal) * c.m_CollisionNormal;
+		Vector2 velocityParallel2 = obj2->Velocity().dot(c.m_CollisionNormal) * c.m_CollisionNormal;
+		Vector2 closingVelocity = velocityParallel2 - velocityParallel1;
 
 		// TODO: coefficient of resitution = 30%
-		float coeff = 1.f + 0.3f;
+		Float coeff = 1.f + 0.3f;
 
 		obj1->Velocity() += massFactor1 * closingVelocity * coeff;
 		obj2->Velocity() -= massFactor2 * closingVelocity * coeff;
@@ -107,9 +107,9 @@ void Physics::ApplyImpulseRotation() {
 		Object* obj1 = c.m_Object1;
 		Object* obj2 = c.m_Object2;
 
-		float sumInvMass = obj1->GetInvertedMass() + obj2->GetInvertedMass();
-		float massFactor1 = obj1->GetInvertedMass() / sumInvMass;
-		float massFactor2 = obj2->GetInvertedMass() / sumInvMass;
+		Float sumInvMass = obj1->GetInvertedMass() + obj2->GetInvertedMass();
+		Float massFactor1 = obj1->GetInvertedMass() / sumInvMass;
+		Float massFactor2 = obj2->GetInvertedMass() / sumInvMass;
 
 		// Apply Impulse (without rotation / friction)
 
@@ -142,32 +142,32 @@ void Physics::ApplyImpulseRotation() {
 		// mass spread far means the rotation contains a lot more energy (think of spinning and pulling your arms out and in. you speed down and speed up!)
 		// some diabolical mumbojumbo with the tensor and you know the change in transitionalVelocity and angularVelocity :^)
 
-		Vector2f temp = c.m_Object1->Position() - c.m_CollisionPoint1;
-		Vector2f leverArm1 = {-temp[1], temp[0]};
-		Vector2f velocityPoint1 = obj1->Velocity() + leverArm1 * deg2rad(obj1->AngularVelocity());
+		Vector2 temp = c.m_Object1->Position() - c.m_CollisionPoint1;
+		Vector2 leverArm1 = {-temp[1], temp[0]};
+		Vector2 velocityPoint1 = obj1->Velocity() + leverArm1 * deg2rad(obj1->AngularVelocity());
 
 		temp = c.m_Object2->Position() - c.m_CollisionPoint2;
-		Vector2f leverArm2 = {-temp[1], temp[0]};
-		Vector2f velocityPoint2 = obj2->Velocity() + leverArm2 * deg2rad(obj2->AngularVelocity());
+		Vector2 leverArm2 = {-temp[1], temp[0]};
+		Vector2 velocityPoint2 = obj2->Velocity() + leverArm2 * deg2rad(obj2->AngularVelocity());
 
-		Vector2f velocityParallel1 = velocityPoint1.dot(c.m_CollisionNormal) * c.m_CollisionNormal;
-		Vector2f velocityParallel2 = velocityPoint2.dot(c.m_CollisionNormal) * c.m_CollisionNormal;
+		Vector2 velocityParallel1 = velocityPoint1.dot(c.m_CollisionNormal) * c.m_CollisionNormal;
+		Vector2 velocityParallel2 = velocityPoint2.dot(c.m_CollisionNormal) * c.m_CollisionNormal;
 
-		Vector2f closingVelocity = velocityParallel2 - velocityParallel1;
-		float cr = 0.3f; // TODO: cr usually is a property of the colliding materials
-		Vector2f seperatingVelocity = closingVelocity * cr;
+		Vector2 closingVelocity = velocityParallel2 - velocityParallel1;
+		Float cr = 1 + 0.7f; // TODO: cr usually is a property of the colliding materials
+		Vector2 seperatingVelocity = closingVelocity * cr;
 
-		float numerator = seperatingVelocity.dot(c.m_CollisionNormal);
-		float denumerator = c.m_CollisionNormal.squaredNorm() * sumInvMass;
-		float denum1 = pow(c.m_CollisionNormal.dot(leverArm1), 2) / obj1->MomentOfInertia();
-		float denum2 = pow(c.m_CollisionNormal.dot(leverArm2), 2) / obj2->MomentOfInertia();
-		float factorJ = numerator / (denumerator + denum1 + denum2);
+		Float numerator = seperatingVelocity.dot(c.m_CollisionNormal);
+		Float denumerator = c.m_CollisionNormal.squaredNorm() * sumInvMass;
+		Float denum1 = pow(c.m_CollisionNormal.dot(leverArm1), 2) / obj1->MomentOfInertia();
+		Float denum2 = pow(c.m_CollisionNormal.dot(leverArm2), 2) / obj2->MomentOfInertia();
+		Float factorJ = numerator / (denumerator + denum1 + denum2);
 
-		float newAngular1 = obj1->AngularVelocity() + rad2deg(factorJ * c.m_CollisionNormal.dot(leverArm1) / obj1->MomentOfInertia());
-		float newAngular2 = obj2->AngularVelocity() - rad2deg(factorJ * c.m_CollisionNormal.dot(leverArm2) / obj2->MomentOfInertia());
+		Float newAngular1 = obj1->AngularVelocity() + rad2deg(factorJ * c.m_CollisionNormal.dot(leverArm1) / obj1->MomentOfInertia());
+		Float newAngular2 = obj2->AngularVelocity() - rad2deg(factorJ * c.m_CollisionNormal.dot(leverArm2) / obj2->MomentOfInertia());
 
-		Vector2f newTrans1 = obj1->Velocity() + factorJ * obj1->GetInvertedMass() * c.m_CollisionNormal;
-		Vector2f newTrans2 = obj2->Velocity() - factorJ * obj2->GetInvertedMass() * c.m_CollisionNormal;
+		Vector2 newTrans1 = obj1->Velocity() + factorJ * obj1->GetInvertedMass() * c.m_CollisionNormal;
+		Vector2 newTrans2 = obj2->Velocity() - factorJ * obj2->GetInvertedMass() * c.m_CollisionNormal;
 
 		obj1->Velocity() = newTrans1;
 		obj2->Velocity() = newTrans2;
@@ -216,12 +216,12 @@ bool Physics::TestCollision(Object* o1, Object* o2) {
 }
 
 bool Physics::TestCollisionCircleCircle(Circle* c1, Circle* c2) {
-	Vector2f diff = c2->Position() - c1->Position();
-	float depth = (c1->Radius() + c2->Radius()) - diff.norm();
+	Vector2 diff = c2->Position() - c1->Position();
+	Float depth = (c1->Radius() + c2->Radius()) - diff.norm();
 	if (depth > 0) {
 		diff.normalize();
-		Vector2f p1 = c1->Position() + diff * c1->Radius();
-		Vector2f p2 = c2->Position() - diff * c2->Radius();
+		Vector2 p1 = c1->Position() + diff * c1->Radius();
+		Vector2 p2 = c2->Position() - diff * c2->Radius();
 		m_Collisions.push_back(Collision(c1, c2, p1, p2, diff, depth));
 		return true;
 	}
@@ -231,27 +231,27 @@ bool Physics::TestCollisionCircleCircle(Circle* c1, Circle* c2) {
 bool Physics::TestCollisionCircleBox(Circle* c1, Box* c2, bool swapped) {
 
 	// Boundary Test
-	float maxBox1 = c1->Radius();
-	float maxBox2 = c2->HalfSize().maxCoeff();
-	float distance = (c2->Position() - c1->Position()).norm();
+	Float maxBox1 = c1->Radius();
+	Float maxBox2 = c2->HalfSize().maxCoeff();
+	Float distance = (c2->Position() - c1->Position()).norm();
 	if (distance > maxBox1 + maxBox2) return false;
 
 
-	Matrix2f rot;
-	float radBoxAligned = deg2rad(c2->Angle());
+	Matrix2 rot;
+	Float radBoxAligned = deg2rad(c2->Angle());
 	rot(0, 0) = cos(radBoxAligned);
 	rot(0, 1) = -sin(radBoxAligned);
 	rot(1, 0) = sin(radBoxAligned);
 	rot(1, 1) = cos(radBoxAligned);
-	Matrix2f invRot = rot.inverse();
+	Matrix2 invRot = rot.inverse();
 
-	Vector2f sPos = c1->Position();
+	Vector2 sPos = c1->Position();
 	sPos -= c2->Position();
 	sPos = rot * sPos;
 
-	Vector2f cBox = sPos;
-	float xsize = c2->HalfSize()(0);
-	float ysize = c2->HalfSize()(1);
+	Vector2 cBox = sPos;
+	Float xsize = c2->HalfSize()(0);
+	Float ysize = c2->HalfSize()(1);
 	if (cBox(0) < -xsize) {
 		cBox(0) = -xsize;
 	} else if (cBox(0) > xsize) {
@@ -266,12 +266,12 @@ bool Physics::TestCollisionCircleBox(Circle* c1, Box* c2, bool swapped) {
 	cBox = invRot * cBox;
 	sPos = invRot * sPos;
 
-	Vector2f box2circle = sPos - cBox;
-	float depth = c1->Radius() - box2circle.norm();
+	Vector2 box2circle = sPos - cBox;
+	Float depth = c1->Radius() - box2circle.norm();
 
 	if (depth > 0) {
 		box2circle.normalize();
-		Vector2f cSp = c1->Position() - box2circle * c1->Radius();
+		Vector2 cSp = c1->Position() - box2circle * c1->Radius();
 		if (swapped) {
 			m_Collisions.push_back(Collision(c1, c2, cSp, cBox, -box2circle, depth));
 		} else {
@@ -287,32 +287,32 @@ bool Physics::TestCollisionCircleBox(Circle* c1, Box* c2, bool swapped) {
 bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 
 	// BoundaryTest
-	float maxBox1 = c1->HalfSize().norm();
-	float maxBox2 = c2->HalfSize().norm();
-	float distance = (c2->Position() - c1->Position()).norm();
+	Float maxBox1 = c1->HalfSize().norm();
+	Float maxBox2 = c2->HalfSize().norm();
+	Float distance = (c2->Position() - c1->Position()).norm();
 	if (distance > maxBox1 + maxBox2) return false;
 
 	// Potential collision, initialized with infinite depth.
-	Collision coll(c1, c2, Vector2f(), Vector2f(), Vector2f(), std::numeric_limits<float>::infinity());
+	Collision coll(c1, c2, Vector2(), Vector2(), Vector2(), std::numeric_limits<Float>::infinity());
 
 	// angle in radians of both objects
-	float angle1 = deg2rad(c1->Angle());
-	float angle2 = deg2rad(c2->Angle());
+	Float angle1 = deg2rad(c1->Angle());
+	Float angle2 = deg2rad(c2->Angle());
 
 	// normals of (width-direction, height-direction) of objects 1 and 2
-	Vector2f nw1 = {cos(angle1), -sin(angle1)};
-	Vector2f nh1 = {sin(angle1), cos(angle1)};
-	Vector2f nw2 = {cos(angle2), -sin(angle2)};
-	Vector2f nh2 = {sin(angle2), cos(angle2)};
+	Vector2 nw1 = {cos(angle1), -sin(angle1)};
+	Vector2 nh1 = {sin(angle1), cos(angle1)};
+	Vector2 nw2 = {cos(angle2), -sin(angle2)};
+	Vector2 nh2 = {sin(angle2), cos(angle2)};
 
 	// vectors from object center to face
-	Vector2f w1 = c1->HalfSize()[0] * nw1;
-	Vector2f h1 = c1->HalfSize()[1] * nh1;
-	Vector2f w2 = c2->HalfSize()[0] * nw2;
-	Vector2f h2 = c2->HalfSize()[1] * nh2;
+	Vector2 w1 = c1->HalfSize()[0] * nw1;
+	Vector2 h1 = c1->HalfSize()[1] * nh1;
+	Vector2 w2 = c2->HalfSize()[0] * nw2;
+	Vector2 h2 = c2->HalfSize()[1] * nh2;
 
 	// center2center vector from obj 1 to obj 2
-	Vector2f c2c = c2->Position() - c1->Position();
+	Vector2 c2c = c2->Position() - c1->Position();
 
 	// for each normal:
 	//     we map w1,h2,w2,h2 summed together then substract mapped c2c vector
@@ -321,8 +321,8 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 	//     if positive, result is the distance the objects intersect
 	// since projection is performed the same, we use this helper function:
 
-	auto projectionHelper = [&] (Vector2f& normal, float boxSize, Vector2f& w2, Vector2f& h2, Vector2f c2c, Box* obj1, Box* obj2) {
-		float depth = abs(boxSize) + abs(w2.dot(normal)) + abs(h2.dot(normal));
+	auto projectionHelper = [&] (Vector2& normal, Float boxSize, Vector2& w2, Vector2& h2, Vector2 c2c, Box* obj1, Box* obj2) {
+		Float depth = abs(boxSize) + abs(w2.dot(normal)) + abs(h2.dot(normal));
 		depth -= abs(c2c.dot(normal));
 		return depth;
 	};
@@ -335,7 +335,7 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 		return false;
 	}
 
-	float newDepth = projectionHelper(nh1, c1->HalfSize()[1], w2, h2, c2c, c1, c2);
+	Float newDepth = projectionHelper(nh1, c1->HalfSize()[1], w2, h2, c2c, c1, c2);
 	if (newDepth < 0) {
 		return false;
 	} else if (newDepth < coll.m_Depth) {
@@ -365,8 +365,8 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 	//   if dot product == 0 then ignore this direction, CP2 is in the center of the face
 	// then CollisionPoint1: CP2 + normal * depth
 
-	Vector2f rotWidth;
-	Vector2f rotHeight;
+	Vector2 rotWidth;
+	Vector2 rotHeight;
 
 	switch (collisionCase) {
 		case 1: // normal horizontal (width) of box 1
@@ -408,13 +408,13 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 
 	coll.m_CollisionPoint2 = coll.m_Object2->Position();
 
-	if ((coll.m_CollisionNormal.dot(rotWidth)) < cEpsilon) {
+	if ((coll.m_CollisionNormal.dot(rotWidth)) < -cEpsilon) {
 		coll.m_CollisionPoint2 += rotWidth;
 	} else if ((coll.m_CollisionNormal.dot(rotWidth)) > cEpsilon) {
 		coll.m_CollisionPoint2 -= rotWidth;
 	}
 
-	if ((coll.m_CollisionNormal.dot(rotHeight)) < cEpsilon) {
+	if ((coll.m_CollisionNormal.dot(rotHeight)) < -cEpsilon) {
 		coll.m_CollisionPoint2 += rotHeight;
 	} else if ((coll.m_CollisionNormal.dot(rotHeight)) > cEpsilon) {
 		coll.m_CollisionPoint2 -= rotHeight;

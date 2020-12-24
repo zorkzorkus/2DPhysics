@@ -1,6 +1,6 @@
 #include "Object.hpp"
 
-void Object::Update(float timeDelta) {
+void Object::Update(Float timeDelta) {
 
 	if (m_InvertedMass == 0.f) return;
 
@@ -12,39 +12,39 @@ void Object::Update(float timeDelta) {
 
 }
 
-Vector2f & Object::Position() {
+Vector2 & Object::Position() {
 	return m_Position;
 }
 
-Vector2f & Object::Velocity() {
+Vector2 & Object::Velocity() {
 	return m_Velocity;
 }
 
-Vector2f & Object::Acceleration() {
+Vector2 & Object::Acceleration() {
 	return m_Acceleration;
 }
 
-float & Object::Angle() {
+Float & Object::Angle() {
 	return m_Angle;
 }
 
-float & Object::AngularVelocity() {
+Float & Object::AngularVelocity() {
 	return m_AngularVelocity;
 }
 
-float& Object::MomentOfInertia() {
+Float& Object::MomentOfInertia() {
 	return m_MomentOfInertia;
 }
 
-float Object::GetMass() {
+Float Object::GetMass() {
 	return m_Mass;
 }
 
-float Object::GetInvertedMass() {
+Float Object::GetInvertedMass() {
 	return m_InvertedMass;
 }
 
-void Object::SetMass(float mass) {
+void Object::SetMass(Float mass) {
 
 	if (mass == 0.f) {
 		m_Mass = 0.f;
@@ -62,7 +62,7 @@ void Object::SetMass(float mass) {
 	m_InvertedMass = 1.f / mass;
 }
 
-void Object::SetInvertedMass(float invMass) {
+void Object::SetInvertedMass(Float invMass) {
 
 	if (invMass == 0.f) {
 		m_Mass = cInfiniteMass;
@@ -88,7 +88,7 @@ Object::ObjectType Object::GetType() {
 	return m_Type;
 }
 
-Object::Object(float mass, Vector2f position, Vector2f velocity, Vector2f acceleration, float angle, float angularVelocity) : m_Position(position), m_Velocity(velocity), m_Acceleration(acceleration), m_Angle(angle), m_AngularVelocity(angularVelocity), m_Type(Object::ObjectType::Invalid) {
+Object::Object(Float mass, Vector2 position, Vector2 velocity, Vector2 acceleration, Float angle, Float angularVelocity) : m_Position(position), m_Velocity(velocity), m_Acceleration(acceleration), m_Angle(angle), m_AngularVelocity(angularVelocity), m_Type(Object::ObjectType::Invalid) {
 	SetMass(mass);
 	m_Color = rand() | 0xFF000000; // shit code
 }

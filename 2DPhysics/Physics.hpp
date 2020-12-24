@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Common.hpp"
 #include "ObjectUtility.hpp"
 #include "Collision.hpp"
 
@@ -9,7 +10,7 @@ public:
 
 	Physics(std::vector<Object*>& objects);
 
-	void Update(float timeDelta);
+	void Update(Float timeDelta);
 
 private:
 

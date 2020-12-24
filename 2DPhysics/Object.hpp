@@ -8,21 +8,21 @@ public:
 
 	enum class ObjectType { Invalid, Box, Circle };
 
-	virtual void Update(float timeDelta);
+	virtual void Update(Float timeDelta);
 
 	// Reference
-	Vector2f& Position();
-	Vector2f& Velocity();
-	Vector2f& Acceleration();
-	float& Angle();
-	float& AngularVelocity();
-	float& MomentOfInertia();
+	Vector2& Position();
+	Vector2& Velocity();
+	Vector2& Acceleration();
+	Float& Angle();
+	Float& AngularVelocity();
+	Float& MomentOfInertia();
 
 	// Mass can not be accessed by reference since we cache it's inverted value.
-	float GetMass();
-	float GetInvertedMass();
-	void SetMass(float mass);
-	void SetInvertedMass(float invMass);
+	Float GetMass();
+	Float GetInvertedMass();
+	void SetMass(Float mass);
+	void SetInvertedMass(Float invMass);
 
 	bool IsMovable();
 	ObjectType GetType();
@@ -31,16 +31,16 @@ public:
 
 protected:
 
-	Object(float mass = 1.f, Vector2f position = Vector2f::Zero(), Vector2f velocity = Vector2f::Zero(), Vector2f acceleration = Vector2f::Zero(), float angle = 0.f, float angularVelocity = 0.f);
+	Object(Float mass = 1.f, Vector2 position = Vector2::Zero(), Vector2 velocity = Vector2::Zero(), Vector2 acceleration = Vector2::Zero(), Float angle = 0.f, Float angularVelocity = 0.f);
 
-	Vector2f m_Position;
-	Vector2f m_Velocity;
-	Vector2f m_Acceleration;
-	float m_MomentOfInertia;
-	float m_Mass;
-	float m_InvertedMass;
-	float m_Angle;
-	float m_AngularVelocity;
+	Vector2 m_Position;
+	Vector2 m_Velocity;
+	Vector2 m_Acceleration;
+	Float m_MomentOfInertia;
+	Float m_Mass;
+	Float m_InvertedMass;
+	Float m_Angle;
+	Float m_AngularVelocity;
 
 
 	ObjectType m_Type;

@@ -26,7 +26,7 @@ void Application::Run() {
 void Application::Update() {
 
 	QueryPerformanceCounter(&m_timerNow);
-	float elapsedTime = static_cast<float>(m_timerNow.QuadPart - m_timerPrev.QuadPart) / static_cast<float>(m_timerFreq.QuadPart);
+	Float elapsedTime = static_cast<Float>(m_timerNow.QuadPart - m_timerPrev.QuadPart) / static_cast<Float>(m_timerFreq.QuadPart);
 	if (elapsedTime < 0.001) return;
 	m_timerPrev = m_timerNow;
 
@@ -40,7 +40,7 @@ void Application::Render(ZorkLib::SimpleRenderer& sr) {
 
 	for (auto& obj : m_Objects) {
 
-		Vector2f pos = obj->Position();
+		Vector2 pos = obj->Position();
 		pos(1) = 1440.f - pos(1);
 
 		if (Circle* circle = dynamic_cast<Circle*>(obj)) {
@@ -60,8 +60,8 @@ void Application::OnKeyEvent(UINT32 key, bool down) {
 
 	Object* newObject;
 	ZorkLib::Point cursorPos = m_pWindow->GetCursorPos();
-	float x = cursorPos.x;
-	float y = 1440.f - cursorPos.y;
+	Float x = cursorPos.x;
+	Float y = 1440.f - cursorPos.y;
 
 	if (down) { // DOWN
 
@@ -75,34 +75,34 @@ void Application::OnKeyEvent(UINT32 key, bool down) {
 				ClearObjects();
 				break;
 			case 0x30:
-				newObject = new Box(Vector2f(15.f, 15.f), 15.f, Vector2f(x, y));
-				newObject->Acceleration() = Vector2f(0.f, cGravity);
+				newObject = new Box(Vector2(15.f, 15.f), 15.f, Vector2(x, y));
+				newObject->Acceleration() = Vector2(0.f, cGravity);
 				newObject->Angle() = 45.f;
 				m_Objects.push_back(newObject);
 				break;
 			case 0x31:
-				newObject = new Box(Vector2f(300, 30), cInfiniteMass, Vector2f(x, y));
+				newObject = new Box(Vector2(300, 30), cInfiniteMass, Vector2(x, y));
 				newObject->Angle() = 180;
 				m_Objects.push_back(newObject);
 				break;
 			case 0x32:
-				newObject = new Box(Vector2f(30, 300), cInfiniteMass, Vector2f(x, y));
+				newObject = new Box(Vector2(30, 300), cInfiniteMass, Vector2(x, y));
 				m_Objects.push_back(newObject);
 				break;
 			case 0x33:
-				newObject = new Box(Vector2f(160.f, 20.f), 999.f, Vector2f(x, y));
+				newObject = new Box(Vector2(160.f, 20.f), 999.f, Vector2(x, y));
 				newObject->AngularVelocity() = -5.f;
-				newObject->Acceleration() = Vector2f(0.f, 0.f);
+				newObject->Acceleration() = Vector2(0.f, 0.f);
 				m_Objects.push_back(newObject);
 				break;
 			case 0x34:
-				newObject = new Box(Vector2f(100, 100), 999.f, Vector2f(1280, 720));
-				newObject->Acceleration() = Vector2f(0.f, 0.f);
+				newObject = new Box(Vector2(100, 100), 999.f, Vector2(1280, 720));
+				newObject->Acceleration() = Vector2(0.f, 0.f);
 				m_Objects.push_back(newObject);
 				// box1 goes to H = 820, we want tiny intersection: sqrt(2)*50 - 5
-				newObject = new Box(Vector2f(50, 50), 999.f, Vector2f(1280, 720 + 100 + sqrt(2) * 50.f - 5));
+				newObject = new Box(Vector2(50, 50), 999.f, Vector2(1280, 720 + 100 + sqrt(2) * 50.f - 5));
 				newObject->Angle() = 45.f;
-				newObject->Acceleration() = Vector2f(0.f, 0.f);
+				newObject->Acceleration() = Vector2(0.f, 0.f);
 				m_Objects.push_back(newObject);
 				break;
 		}
@@ -120,26 +120,26 @@ void Application::OnMouseEvent(UINT32 key, INT32 x, INT32 y, bool down) {
 		switch (key) {
 			case VK_LBUTTON:
 
-				newObject = new Box(Vector2f(15.f, 15.f), 15.f, Vector2f(x, 1440.f - y));
-				//newObject = new Circle(15.f, 15.f, Vector2f(x, 1440.f - y));
-				newObject->Acceleration() = Vector2f(0.f, cGravity);
+				newObject = new Box(Vector2(15.f, 15.f), 15.f, Vector2(x, 1440.f - y));
+				//newObject = new Circle(15.f, 15.f, Vector2(x, 1440.f - y));
+				newObject->Acceleration() = Vector2(0.f, cGravity);
 				m_Objects.push_back(newObject);
 
 				break;
 
 			case VK_RBUTTON:
 
-				newObject = new Box(Vector2f(100.f, 30.f), cInfiniteMass, Vector2f(x, 1440.f - y));
-				newObject->Acceleration() = Vector2f(0.f, cGravity);
+				newObject = new Box(Vector2(100.f, 30.f), cInfiniteMass, Vector2(x, 1440.f - y));
+				newObject->Acceleration() = Vector2(0.f, cGravity);
 				m_Objects.push_back(newObject);
 
 				break;
 
 			case VK_MBUTTON:
 
-				newObject = new Box(Vector2f(160.f, 20.f), 999.f, Vector2f(x, 1440.f - y));
-				newObject->AngularVelocity() = 5.f;
-				newObject->Acceleration() = Vector2f(0.f, cGravity);
+				newObject = new Box(Vector2(260.f, 20.f), 99999.f, Vector2(x, 1440.f - y));
+				newObject->AngularVelocity() = 100.f;
+				//newObject->Acceleration() = Vector2(0.f, cGravity);
 				m_Objects.push_back(newObject);
 
 				break;

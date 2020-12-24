@@ -1,5 +1,5 @@
 #include "Circle.hpp"
 
-float& Circle::Radius() {
+Float& Circle::Radius() {
 	return m_Radius;
 }

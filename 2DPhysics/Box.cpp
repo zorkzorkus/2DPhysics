@@ -1,5 +1,5 @@
 #include "Box.hpp"
 
-Vector2f & Box::HalfSize() {
+Vector2 & Box::HalfSize() {
 	return m_HalfSize;
 }

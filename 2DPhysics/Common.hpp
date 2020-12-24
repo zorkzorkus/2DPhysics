@@ -8,24 +8,33 @@
 #undef max
 #undef min
 
-using Eigen::Vector2f;
-using Eigen::Vector3f;
-using Eigen::Matrix2f;
-using Eigen::Matrix3f;
+#ifdef USE_FLOAT64
+using Float = double;
+using Vector2 = Eigen::Vector2d;
+using Vector3 = Eigen::Vector3d;
+using Matrix2 = Eigen::Matrix2d;
+using Matrix3 = Eigen::Matrix3d;
+#else
+using Float = float;
+using Vector2 = Eigen::Vector2f;
+using Vector3 = Eigen::Vector3f;
+using Matrix2 = Eigen::Matrix2f;
+using Matrix3 = Eigen::Matrix3f;
+#endif
 
-constexpr float cGravity = -9.81f;
-constexpr float cInfiniteMass = std::numeric_limits<float>::infinity();
-constexpr float cPI = 3.14159265358979323846f;
-constexpr float cEpsilon = 1e-05;
+constexpr Float cGravity = -9.81f;
+constexpr Float cInfiniteMass = std::numeric_limits<Float>::infinity();
+constexpr Float cPI = 3.14159265358979323846f;
+constexpr Float cEpsilon = 1e-05;
 
 constexpr size_t sMaxCollisionSteps = 30;
-constexpr float sSpeedFactor = 10.f;
+constexpr Float sSpeedFactor = 10.f;
 
-inline float deg2rad(float deg) {
+inline Float deg2rad(Float deg) {
 	return deg * cPI / 180.f;
 }
 
-inline float rad2deg(float rad) {
+inline Float rad2deg(Float rad) {
 	return rad * 180.f / cPI;
 }
 
