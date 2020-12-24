@@ -22,13 +22,15 @@ using Matrix2 = Eigen::Matrix2f;
 using Matrix3 = Eigen::Matrix3f;
 #endif
 
-constexpr Float cGravity = -9.81f;
+constexpr Float cGravity = -9.81;
 constexpr Float cInfiniteMass = std::numeric_limits<Float>::infinity();
-constexpr Float cPI = 3.14159265358979323846f;
+constexpr Float cPI = 3.14159265358979323846;
 constexpr Float cEpsilon = 1e-05;
 
 constexpr size_t sMaxCollisionSteps = 30;
-constexpr Float sSpeedFactor = 10.f;
+constexpr Float sSpeedFactor = 10.0;
+constexpr Float cSingleStepTime = 0.001; // 1ms
+constexpr Float cSingleStepTime2 = 0.01; // 1ms
 
 inline Float deg2rad(Float deg) {
 	return deg * cPI / 180.f;

@@ -26,6 +26,6 @@ private:
 	Physics m_Physics;
 	std::vector<Object*> m_Objects;
 	bool m_KeepRunning;
-	
+	bool m_SimulationPaused;
 
 };

@@ -27,7 +27,7 @@ void Application::Update() {
 
 	QueryPerformanceCounter(&m_timerNow);
 	Float elapsedTime = static_cast<Float>(m_timerNow.QuadPart - m_timerPrev.QuadPart) / static_cast<Float>(m_timerFreq.QuadPart);
-	if (elapsedTime < 0.001) return;
+	if (elapsedTime < 0.001 || m_SimulationPaused) return;
 	m_timerPrev = m_timerNow;
 
 	m_Physics.Update(elapsedTime * sSpeedFactor);
@@ -68,6 +68,20 @@ void Application::OnKeyEvent(UINT32 key, bool down) {
 	} else { // UP
 
 		switch (key) {
+			case 'P':
+				m_SimulationPaused = !m_SimulationPaused;
+				if (!m_SimulationPaused) {
+					QueryPerformanceCounter(&m_timerPrev);
+				}
+				break;
+			case 'O':
+				m_SimulationPaused = true;
+				m_Physics.Update(sSpeedFactor * cSingleStepTime);
+				break;
+			case 'I':
+				m_SimulationPaused = true;
+				m_Physics.Update(sSpeedFactor * cSingleStepTime2);
+				break;
 			case VK_ESCAPE:
 				m_KeepRunning = false;
 				break;

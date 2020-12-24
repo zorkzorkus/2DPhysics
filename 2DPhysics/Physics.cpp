@@ -378,7 +378,7 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 			if (coll.m_CollisionNormal.dot(c2c) < 0) coll.m_CollisionNormal = -coll.m_CollisionNormal;
 			break;
 
-		case 2: // normal vertial (height) of box 2
+		case 2: // normal vertial (height) of box 1
 			coll.m_CollisionNormal = nh1;
 			rotWidth = w2;
 			rotHeight = h2;
