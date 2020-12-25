@@ -299,11 +299,20 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 	Float angle1 = deg2rad(c1->Angle());
 	Float angle2 = deg2rad(c2->Angle());
 
+	Float cosAngle1, sinAngle1, cosAngle2, sinAngle2;
+	sincospi(c1->Angle() / 180., sinAngle1, cosAngle1);
+	sincospi(c2->Angle() / 180., sinAngle2, cosAngle2);
+
+	//cosAngle1 = cos(angle1);
+	//sinAngle1 = sin(angle1);
+	//cosAngle2 = cos(angle2);
+	//sinAngle2 = sin(angle2);
+
 	// normals of (width-direction, height-direction) of objects 1 and 2
-	Vector2 nw1 = {cos(angle1), -sin(angle1)};
-	Vector2 nh1 = {sin(angle1), cos(angle1)};
-	Vector2 nw2 = {cos(angle2), -sin(angle2)};
-	Vector2 nh2 = {sin(angle2), cos(angle2)};
+	Vector2 nw1 = {cosAngle1, -sinAngle1};
+	Vector2 nh1 = {sinAngle1, cosAngle1};
+	Vector2 nw2 = {cosAngle2, -sinAngle2};
+	Vector2 nh2 = {sinAngle2, cosAngle2};
 
 	// vectors from object center to face
 	Vector2 w1 = c1->HalfSize()[0] * nw1;
