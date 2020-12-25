@@ -323,6 +323,9 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 	// center2center vector from obj 1 to obj 2
 	Vector2 c2c = c2->Position() - c1->Position();
 
+	//
+	Float overlap, overlap1, overlap2, overlap3, overlap4;
+
 	// for each normal:
 	//     we map w1,h2,w2,h2 summed together then substract mapped c2c vector
 	//     since normal is taken from one box, we don't need to map w1 and h1
@@ -330,21 +333,27 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 	//     if positive, result is the distance the objects intersect
 	// since projection is performed the same, we use this helper function:
 
-	auto projectionHelper = [&] (Vector2& normal, Float boxSize, Vector2& w2, Vector2& h2, Vector2 c2c, Box* obj1, Box* obj2) {
-		Float depth = abs(boxSize) + abs(w2.dot(normal)) + abs(h2.dot(normal));
-		depth -= abs(c2c.dot(normal));
-		return depth;
+	auto projectionHelper = [] (Vector2& normal, Float boxSize, Vector2& w2, Vector2& h2, Vector2 c2c, Float& depth, Float& overlapCenter) {
+		Float maxBox2 = abs(w2.dot(normal)) + abs(h2.dot(normal));
+		Float c2cNorm = abs(c2c.dot(normal));
+		depth = boxSize + maxBox2 - c2cNorm;
+		if (c2cNorm + maxBox2 < boxSize) {
+			overlapCenter = 0;
+		} else {
+			overlapCenter = depth * 0.5;
+		}
 	};
 
 	// code looks unnessecary bloated, but should lead to better performance <.<
 
 	int collisionCase = 1;
-	coll.m_Depth = projectionHelper(nw1, c1->HalfSize()[0], w2, h2, c2c, c1, c2);
+	projectionHelper(nw1, c1->HalfSize()[0], w2, h2, c2c, coll.m_Depth, overlap1);
 	if (coll.m_Depth < 0) {
 		return false;
 	}
 
-	Float newDepth = projectionHelper(nh1, c1->HalfSize()[1], w2, h2, c2c, c1, c2);
+	Float newDepth;
+	projectionHelper(nh1, c1->HalfSize()[1], w2, h2, c2c, newDepth, overlap2);
 	if (newDepth < 0) {
 		return false;
 	} else if (newDepth < coll.m_Depth) {
@@ -352,7 +361,7 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 		collisionCase = 2;
 	}
 
-	newDepth = projectionHelper(nw2, c2->HalfSize()[0], w1, h1, -c2c, c2, c1);
+	projectionHelper(nw2, c2->HalfSize()[0], w1, h1, -c2c, newDepth, overlap3);
 	if (newDepth < 0) {
 		return false;
 	} else if (newDepth < coll.m_Depth) {
@@ -360,7 +369,7 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 		collisionCase = 3;
 	}
 
-	newDepth = projectionHelper(nh2, c2->HalfSize()[1], w1, h1, -c2c, c2, c1);
+	projectionHelper(nh2, c2->HalfSize()[1], w1, h1, -c2c, newDepth, overlap4);
 	if (newDepth < 0) {
 		return false;
 	} else if (newDepth < coll.m_Depth) {
@@ -376,7 +385,6 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 
 	Vector2 rotWidth;
 	Vector2 rotHeight;
-
 	switch (collisionCase) {
 		case 1: // normal horizontal (width) of box 1
 			coll.m_CollisionNormal = nw1;
@@ -384,6 +392,7 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 			rotHeight = h2;
 			coll.m_Object1 = c1;
 			coll.m_Object2 = c2;
+			overlap = overlap2;
 			if (coll.m_CollisionNormal.dot(c2c) < 0) coll.m_CollisionNormal = -coll.m_CollisionNormal;
 			break;
 
@@ -393,6 +402,7 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 			rotHeight = h2;
 			coll.m_Object1 = c1;
 			coll.m_Object2 = c2;
+			overlap = overlap1;
 			if (coll.m_CollisionNormal.dot(c2c) < 0) coll.m_CollisionNormal = -coll.m_CollisionNormal;
 			break;
 
@@ -402,7 +412,10 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 			rotHeight = h1;
 			coll.m_Object1 = c2;
 			coll.m_Object2 = c1;
-			if (coll.m_CollisionNormal.dot(c2c) > 0) coll.m_CollisionNormal = -coll.m_CollisionNormal;
+			overlap = overlap4;
+			if (coll.m_CollisionNormal.dot(c2c) > 0) {
+				coll.m_CollisionNormal = -coll.m_CollisionNormal;
+			}
 			break;
 
 		case 4: // normal vertical (height) of box 2
@@ -411,7 +424,10 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 			rotHeight = h1;
 			coll.m_Object1 = c2;
 			coll.m_Object2 = c1;
-			if (coll.m_CollisionNormal.dot(c2c) > 0) coll.m_CollisionNormal = -coll.m_CollisionNormal;
+			overlap = overlap3;
+			if (coll.m_CollisionNormal.dot(c2c) > 0) {
+				coll.m_CollisionNormal = -coll.m_CollisionNormal;
+			}
 			break;
 	}
 
@@ -421,12 +437,26 @@ bool Physics::TestCollisionBoxBox(Box* c1, Box* c2) {
 		coll.m_CollisionPoint2 += rotWidth;
 	} else if ((coll.m_CollisionNormal.dot(rotWidth)) > cEpsilon) {
 		coll.m_CollisionPoint2 -= rotWidth;
+	} else {
+		// face 2 face collision
+		if (rotWidth.dot(c2c) > 0) {
+			coll.m_CollisionPoint2 -= rotWidth.normalized() * overlap;
+		} else {
+			coll.m_CollisionPoint2 += rotWidth.normalized() * overlap;
+		}
 	}
 
 	if ((coll.m_CollisionNormal.dot(rotHeight)) < -cEpsilon) {
 		coll.m_CollisionPoint2 += rotHeight;
 	} else if ((coll.m_CollisionNormal.dot(rotHeight)) > cEpsilon) {
 		coll.m_CollisionPoint2 -= rotHeight;
+	} else {
+		// face 2 face collision
+		if (rotHeight.dot(c2c) > 0) {
+			coll.m_CollisionPoint2 -= rotHeight.normalized() * overlap;
+		} else {
+			coll.m_CollisionPoint2 += rotHeight.normalized() * overlap;
+		}
 	}
 
 	coll.m_CollisionPoint1 = coll.m_CollisionPoint2 + coll.m_CollisionNormal * coll.m_Depth;
